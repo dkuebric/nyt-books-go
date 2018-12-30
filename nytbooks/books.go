@@ -19,7 +19,7 @@ type Client struct {
 	httpClient *http.Client
 }
 
-// Generate a new API client, provided an API key.
+// NewClient generates a new API client, provided an API key.
 func NewClient(key string) *Client {
 	return &Client{key, &http.Client{}}
 }
@@ -68,7 +68,7 @@ type booksListResponse struct {
 	LastModified string        `json:"last_modified"`
 }
 
-// Get the most recent list of best sellers for a particular list name.
+// GetBestSellers gets the most recent list of best sellers for a particular list name.
 func (c *Client) GetBestSellers(list string, params map[string]string) ([]BookRanking, error) {
 	if params == nil {
 		params = make(map[string]string)
@@ -77,7 +77,7 @@ func (c *Client) GetBestSellers(list string, params map[string]string) ([]BookRa
 
 	url := c.endpointFromOpts(booksListsURL, params)
 
-	raw, err := c.getApiResponse(url)
+	raw, err := c.getAPIResponse(url)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +92,7 @@ func (c *Client) GetBestSellers(list string, params map[string]string) ([]BookRa
 	return resp.BookRankings, nil
 }
 
-func (c *Client) getApiResponse(url *url.URL) ([]byte, error) {
+func (c *Client) getAPIResponse(url *url.URL) ([]byte, error) {
 	resp, err := c.httpClient.Get(url.String())
 	if err != nil {
 		return nil, err
@@ -107,8 +107,8 @@ func (c *Client) getApiResponse(url *url.URL) ([]byte, error) {
 	return raw, nil
 }
 
-func (c *Client) endpointFromOpts(baseURL string, options map[string]string) *url.URL {
-	u, _ := url.ParseRequestURI(baseURL)
+func (c *Client) endpointFromOpts(endpointURL string, options map[string]string) *url.URL {
+	u, _ := url.ParseRequestURI(endpointURL)
 	data := url.Values{}
 	data.Add("api-key", c.key)
 	for o, v := range options {
